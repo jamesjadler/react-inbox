@@ -1,6 +1,19 @@
 import React from 'react'
 
-const Toolbar = ()=>{
+const Toolbar = ({markReadCallback,selectAllCallback,messages})=>{
+    // Given that no messages are selected
+    // When a user checks the "Select All" checkbox
+    // Then it should check all messages (and highlight them)
+    //
+    // Given that some messages are selected
+    // When a user checks the "Select All" checkbox
+    // Then it should check all messages (and highlight them)
+    //
+    // Given that all messages are selected
+    // When a user unchecks the "Select All" checkbox
+    // Then it should uncheck all messages (and unhighlight them)
+
+
 
     return(
         <div class="row toolbar">
@@ -10,15 +23,15 @@ const Toolbar = ()=>{
                     unread messages
                 </p>
 
-                <button class="btn btn-default">
-                    <i class="fa fa-check-square-o"></i>
+                <button class="btn btn-default" onClick={() => selectAllCallback()}>
+                    <i class="fa fa-check-square-o" ></i>
                 </button>
 
-                <button class="btn btn-default">
+                <button class="btn btn-default" onClick={() => markReadCallback(true)}>
                     Mark As Read
                 </button>
 
-                <button class="btn btn-default">
+                <button class="btn btn-default" onClick={() => markReadCallback(false)}>
                     Mark As Unread
                 </button>
 
