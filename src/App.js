@@ -36,15 +36,19 @@ class App extends Component {
     }
 
     markReadCallback(read) {
-        let checked = this.state.messages.filter(message => message.selected === true );
+        let checked = this.state.messages.filter(message => message.selected === true);
 
-        checked.forEach((message)=>{
+        checked.forEach((message) => {
             let newMessage = {...message, read: message.read = read};
             this.setMessageState(message, newMessage)
 
         })
 
     }
+
+    // countUnreadCallback(){
+    //     let unreadCount = this.state.messages.filter(message => message.read === false || message.read === undefined).length
+    // }
 
     findIndexByMessage(message) {
         let messages = this.state.messages;
@@ -69,7 +73,8 @@ class App extends Component {
         return (
             <div className="App">
                 <Toolbar markReadCallback={this.markReadCallback.bind(this)}
-                         selectAllCallback={this.selectAllCallback.bind(this)}></Toolbar>
+                         selectAllCallback={this.selectAllCallback.bind(this)}
+                         messages={this.state.messages}></Toolbar>
                 <Messages checkCallback={this.toggleCheck.bind(this)}
                           starredCallback={this.toggleStar.bind(this)}
                           messages={this.state.messages}></Messages>
