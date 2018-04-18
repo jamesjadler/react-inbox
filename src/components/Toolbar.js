@@ -1,21 +1,10 @@
 import React from 'react'
 
 const Toolbar = ({markReadCallback, selectAllCallback, messages}) => {
-    // Given that no messages are selected
-    // When a user checks the "Select All" checkbox
-    // Then it should check all messages (and highlight them)
-    //
-    // Given that some messages are selected
-    // When a user checks the "Select All" checkbox
-    // Then it should check all messages (and highlight them)
-    //
-    // Given that all messages are selected
-    // When a user unchecks the "Select All" checkbox
-    // Then it should uncheck all messages (and unhighlight them)
 
     const countUnread = () => {
-       let count = messages.filter(message => message.read === false || message.read === undefined).length;
-       let message = count === 1? "unread message":"unread messages";
+        let count = messages.filter(message => message.read === false || message.read === undefined).length;
+        let message = count === 1 ? "unread message" : "unread messages";
         return (<p class="pull-right">
                 <span class="badge badge">{count}</span>
                 {message}
@@ -23,12 +12,25 @@ const Toolbar = ({markReadCallback, selectAllCallback, messages}) => {
         )
     };
 
+    const selectButtonStyle = () => {
+        let selectedCount = messages.filter(message => message.selected === true).length;
+        let msgCount = messages.length;
+        let style = "fa fa-square-o";
+        let diff = msgCount - selectedCount;
+        if (diff === 0) {
+            style = "fa fa-check-square-o"
+        } else if (diff > 0 && diff < msgCount) {
+            style = "fa fa-minus-square-o"
+        }
+        return style
+    };
+
     return (
         <div class="row toolbar">
             <div class="col-md-12">
                 {countUnread()}
                 <button class="btn btn-default" onClick={() => selectAllCallback()}>
-                    <i class="fa fa-check-square-o"></i>
+                    <i class={selectButtonStyle()}></i>
                 </button>
 
                 <button class="btn btn-default" onClick={() => markReadCallback(true)}>
