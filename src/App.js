@@ -74,10 +74,10 @@ class App extends Component {
             <div className="App">
                 <Toolbar markReadCallback={this.markReadCallback.bind(this)}
                          selectAllCallback={this.selectAllCallback.bind(this)}
-                         messages={this.state.messages}></Toolbar>
+                         messages={this.state.messages}/>
                 <Messages checkCallback={this.toggleCheck.bind(this)}
                           starredCallback={this.toggleStar.bind(this)}
-                          messages={this.state.messages}></Messages>
+                          messages={this.state.messages}/>
             </div>
         );
     }
