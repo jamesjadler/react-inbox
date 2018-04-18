@@ -9,8 +9,6 @@ const Message = ({checkCallback, readCallback, starredCallback, message}) => {
     //Starred message should be marked
 
     const selectedStyle = () => {
-        console.log(message.read);
-        console.log(message.selected);
         var msg = "row message";
         msg = message.read === true ? msg + " read" : msg + " unread";
         msg = message.selected === true ? msg + " selected" : msg;
@@ -18,7 +16,7 @@ const Message = ({checkCallback, readCallback, starredCallback, message}) => {
     };
 
     const starStyle = () => {
-        console.log(message.starred);
+        console.log("Starred: "+message.starred);
         return message.starred === true ? "star fa fa-star" : "star fa fa-star-o";
     };
 
@@ -30,7 +28,7 @@ const Message = ({checkCallback, readCallback, starredCallback, message}) => {
                         <input type="checkbox" checked={message.selected} onClick={checkCallback}/>
                     </div>
                     <div class="col-xs-2">
-                        <i class={starStyle()} onClick={starredCallback}></i>
+                        <i class={starStyle()} onClick={() => starredCallback(message)}></i>
                     </div>
                 </div>
             </div>
