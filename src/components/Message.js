@@ -25,7 +25,8 @@ const Message = ({checkCallback, readCallback, starredCallback, message}) => {
             <div class="col-xs-1">
                 <div class="row">
                     <div class="col-xs-2">
-                        <input type="checkbox" checked={message.selected} onClick={()=>checkCallback(message)}/>
+                        <input type="checkbox" checked={message.selected === undefined ? false : message.selected}
+                               onClick={() => checkCallback(message)}/>
                     </div>
                     <div class="col-xs-2">
                         <i class={starStyle()} onClick={() => starredCallback(message)}></i>
@@ -33,7 +34,8 @@ const Message = ({checkCallback, readCallback, starredCallback, message}) => {
                 </div>
             </div>
             <div class="col-xs-11">
-                {message.labels.map(label => <span class="label label-warning">{label}</span>)}
+                {message.labels !== undefined ? message.labels.map(label => <span
+                    class="label label-warning">{label}</span>) : null}
                 <a href="#">
                     {message.subject}
                 </a>

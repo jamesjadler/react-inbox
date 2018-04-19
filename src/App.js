@@ -46,10 +46,6 @@ class App extends Component {
 
     }
 
-    // countUnreadCallback(){
-    //     let unreadCount = this.state.messages.filter(message => message.read === false || message.read === undefined).length
-    // }
-
     findIndexByMessage(message) {
         let messages = this.state.messages;
         return messages.indexOf(messages.find(m => m.id === message.id));
@@ -68,12 +64,23 @@ class App extends Component {
         })
     }
 
+
+    deleteSelectedCallback() {
+        console.log("Delete btn pressed:")
+        let checked = this.state.messages.filter(message => message.selected === true);
+        let msgIds = checked.map(message => message.id);
+        this.setState({
+            messages: this.state.messages.filter(message => !msgIds.includes(message.id))
+        })
+    }
+
     render() {
         console.log(this.state.messages);
         return (
             <div className="App">
                 <Toolbar markReadCallback={this.markReadCallback.bind(this)}
                          selectAllCallback={this.selectAllCallback.bind(this)}
+                         deleteSelectedCallback={this.deleteSelectedCallback.bind(this)}
                          messages={this.state.messages}/>
                 <Messages checkCallback={this.toggleCheck.bind(this)}
                           starredCallback={this.toggleStar.bind(this)}
