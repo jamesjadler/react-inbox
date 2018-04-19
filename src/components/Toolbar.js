@@ -1,6 +1,6 @@
 import React from 'react'
 
-const Toolbar = ({markReadCallback, selectAllCallback, deleteSelectedCallback, messages}) => {
+const Toolbar = ({markReadCallback, selectAllCallback, deleteSelectedCallback, labelSelectedCallback, messages}) => {
 
     const countUnread = () => {
         let count = messages.filter(message => message.read === false || message.read === undefined).length;
@@ -25,6 +25,24 @@ const Toolbar = ({markReadCallback, selectAllCallback, deleteSelectedCallback, m
         return style
     };
 
+    const onLabelChange = (e, operation) => {
+        e.preventDefault();
+        let value = e.target.value;
+        console.log("label:" + value);
+        if (operation === "Add") {
+            labelSelectedCallback(value, "Add");
+
+        } else if (operation === "Remove") {
+            labelSelectedCallback(value, "Remove")
+
+        }
+
+
+    };
+    const disableButton = () => {
+        return messages.filter(message => message.selected === true).length === 0;
+    };
+
 
     return (
         <div class="row toolbar">
@@ -34,29 +52,30 @@ const Toolbar = ({markReadCallback, selectAllCallback, deleteSelectedCallback, m
                     <i class={selectButtonStyle()}></i>
                 </button>
 
-                <button class="btn btn-default" onClick={() => markReadCallback(true)}>
+                <button class="btn btn-default" disabled = {disableButton()} onClick={() => markReadCallback(true)}>
                     Mark As Read
                 </button>
 
-                <button class="btn btn-default" onClick={() => markReadCallback(false)}>
+                <button class="btn btn-default" disabled = {disableButton()} onClick={() => markReadCallback(false)}>
                     Mark As Unread
                 </button>
 
-                <select class="form-control label-select">
+                <select name="labelAdd" class="form-control label-select" disabled = {disableButton()} onChange={(e) => onLabelChange(e, "Add")}>
                     <option>Apply label</option>
                     <option value="dev">dev</option>
                     <option value="personal">personal</option>
                     <option value="gschool">gschool</option>
                 </select>
 
-                <select class="form-control label-select">
+                <select name="labelRemove" class="form-control label-select" disabled = {disableButton()}
+                        onChange={(e) => onLabelChange(e, "Remove")}>
                     <option>Remove label</option>
                     <option value="dev">dev</option>
                     <option value="personal">personal</option>
                     <option value="gschool">gschool</option>
                 </select>
 
-                <button class="btn btn-default" onClick={() => deleteSelectedCallback()}>
+                <button class="btn btn-default" disabled = {disableButton()} onClick={() => deleteSelectedCallback()}>
                     <i class="fa fa-trash-o"></i>
                 </button>
             </div>

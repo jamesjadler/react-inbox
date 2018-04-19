@@ -53,17 +53,18 @@ class App extends Component {
 
     setMessageState(message, newMessage) {
         console.log("Replacing message: " + message + "\nWith Message: " + newMessage);
+        console.log(message)
+        console.log(newMessage)
         let messageIndex = this.findIndexByMessage(message);
 
-        this.setState({
-            messages: [
-                ...this.state.messages.slice(0, messageIndex),
+        this.setState((prevState)=>{
+           return { messages: [
+                ...prevState.messages.slice(0, messageIndex),
                 newMessage,
-                ...this.state.messages.slice(messageIndex + 1)
+                ...prevState.messages.slice(messageIndex + 1)
             ]
-        })
+        }})
     }
-
 
     deleteSelectedCallback() {
         console.log("Delete btn pressed:")
@@ -74,6 +75,29 @@ class App extends Component {
         })
     }
 
+    labelSelectedCallback(label,operation){
+        let checked = this.state.messages.filter(message => message.selected === true);
+        if (operation === "Add") {
+            checked.forEach((message) => {
+                let labels = !message.labels.includes(label) ? message.labels.concat(label) : message.labels;
+                console.log(labels);
+                let newMessage = {...message, labels: labels};
+                this.setMessageState(message, newMessage)
+
+            })
+        }else if (operation === "Remove"){
+            checked.forEach((message) => {
+                let labels = message.labels.includes(label) ? message.labels.filter(tag=> tag !== label) : message.labels;
+                console.log(labels);
+                let newMessage = {...message, labels: labels};
+                this.setMessageState(message, newMessage)
+
+            })
+
+        }
+    }
+
+
     render() {
         console.log(this.state.messages);
         return (
@@ -81,6 +105,7 @@ class App extends Component {
                 <Toolbar markReadCallback={this.markReadCallback.bind(this)}
                          selectAllCallback={this.selectAllCallback.bind(this)}
                          deleteSelectedCallback={this.deleteSelectedCallback.bind(this)}
+                         labelSelectedCallback={this.labelSelectedCallback.bind(this)}
                          messages={this.state.messages}/>
                 <Messages checkCallback={this.toggleCheck.bind(this)}
                           starredCallback={this.toggleStar.bind(this)}

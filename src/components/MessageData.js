@@ -58,7 +58,7 @@ const MessageData =
             "read": true,
             "starred": true,
             "selected": true,
-            "labels": ["zuul"]
+            "labels": []
         }
     ];
 
