@@ -188,9 +188,7 @@ class App extends Component {
                             let prevMsg = prevState.messages.find(item => message.id === item.id);
                             let selected = prevMsg === undefined ? false : prevMsg.selected;
                             return (
-                                {
-                                    ...message, selected: selected
-                                }
+                                {...message, selected: selected}
 
                             );
                         }
