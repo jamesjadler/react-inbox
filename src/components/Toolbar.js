@@ -29,15 +29,7 @@ const Toolbar = ({markReadCallback, selectAllCallback, deleteSelectedCallback, l
         e.preventDefault();
         let value = e.target.value;
         console.log("label:" + value);
-        if (operation === "Add") {
-            labelSelectedCallback(value, "Add");
-
-        } else if (operation === "Remove") {
-            labelSelectedCallback(value, "Remove")
-
-        }
-
-
+        labelSelectedCallback(value, operation)
     };
     const disableButton = () => {
         return messages.filter(message => message.selected === true).length === 0;
@@ -60,7 +52,7 @@ const Toolbar = ({markReadCallback, selectAllCallback, deleteSelectedCallback, l
                     Mark As Unread
                 </button>
 
-                <select name="labelAdd" class="form-control label-select" disabled = {disableButton()} onChange={(e) => onLabelChange(e, "Add")}>
+                <select name="labelAdd" class="form-control label-select" disabled = {disableButton()} onChange={(e) => onLabelChange(e, "addLabel")}>
                     <option>Apply label</option>
                     <option value="dev">dev</option>
                     <option value="personal">personal</option>
@@ -68,7 +60,7 @@ const Toolbar = ({markReadCallback, selectAllCallback, deleteSelectedCallback, l
                 </select>
 
                 <select name="labelRemove" class="form-control label-select" disabled = {disableButton()}
-                        onChange={(e) => onLabelChange(e, "Remove")}>
+                        onChange={(e) => onLabelChange(e, "removeLabel")}>
                     <option>Remove label</option>
                     <option value="dev">dev</option>
                     <option value="personal">personal</option>

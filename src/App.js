@@ -1,18 +1,32 @@
 import React, {Component} from 'react';
 import './App.css';
-import MessageData from "./components/MessageData";
 import Messages from "./components/Messages";
 import Toolbar from "./components/Toolbar";
 
 class App extends Component {
     constructor(props) {
         super(props);
-        this.state = {messages: MessageData}
+        this.state = {messages: []}
     }
 
-    toggleStar(message) {
-        let newMessage = {...message, starred: !message.starred};
-        this.setMessageState(message, newMessage)
+    async toggleStar(message) {
+        console.log("About to try to patch");
+        await fetch(`/api/messages`, {
+            method: 'PATCH',
+            body: JSON.stringify({
+                messageIds: [message.id],
+                command: "star",
+                star: !message.starred
+            }),
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+            }
+        });
+
+        //Reload messages after update
+        this.reloadMessages();
+
     };
 
     toggleCheck(message) {
@@ -35,15 +49,31 @@ class App extends Component {
         }
     }
 
-    markReadCallback(read) {
+    async markReadCallback(read) {
         let checked = this.state.messages.filter(message => message.selected === true);
+        let msgIds = checked.map(message => message.id);
+        console.log("About to try to patch");
+        await fetch(`/api/messages`, {
+            method: 'PATCH',
+            body: JSON.stringify({
+                messageIds: msgIds,
+                command: "read",
+                read: read
+            }),
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+            }
+        });
+
+        //Reload messages after update
+        this.reloadMessages();
+
 
         checked.forEach((message) => {
             let newMessage = {...message, read: message.read = read};
             this.setMessageState(message, newMessage)
-
         })
-
     }
 
     findIndexByMessage(message) {
@@ -57,46 +87,85 @@ class App extends Component {
         console.log(newMessage)
         let messageIndex = this.findIndexByMessage(message);
 
-        this.setState((prevState)=>{
-           return { messages: [
-                ...prevState.messages.slice(0, messageIndex),
-                newMessage,
-                ...prevState.messages.slice(messageIndex + 1)
-            ]
-        }})
-    }
-
-    deleteSelectedCallback() {
-        console.log("Delete btn pressed:")
-        let checked = this.state.messages.filter(message => message.selected === true);
-        let msgIds = checked.map(message => message.id);
-        this.setState({
-            messages: this.state.messages.filter(message => !msgIds.includes(message.id))
+        this.setState((prevState) => {
+            return {
+                messages: [
+                    ...prevState.messages.slice(0, messageIndex),
+                    newMessage,
+                    ...prevState.messages.slice(messageIndex + 1)
+                ]
+            }
         })
     }
 
-    labelSelectedCallback(label,operation){
+    async deleteSelectedCallback() {
+        console.log("Delete btn pressed:")
         let checked = this.state.messages.filter(message => message.selected === true);
-        if (operation === "Add") {
-            checked.forEach((message) => {
-                let labels = !message.labels.includes(label) ? message.labels.concat(label) : message.labels;
-                console.log(labels);
-                let newMessage = {...message, labels: labels};
-                this.setMessageState(message, newMessage)
+        let msgIds = checked.map(message => message.id);
 
-            })
-        }else if (operation === "Remove"){
-            checked.forEach((message) => {
-                let labels = message.labels.includes(label) ? message.labels.filter(tag=> tag !== label) : message.labels;
-                console.log(labels);
-                let newMessage = {...message, labels: labels};
-                this.setMessageState(message, newMessage)
+        await fetch(`/api/messages`, {
+            method: 'PATCH',
+            body: JSON.stringify({
+                messageIds: msgIds,
+                command: "delete"
+            }),
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+            }
+        });
 
-            })
-
-        }
+        //Reload messages after update
+        this.reloadMessages();
     }
 
+    async labelSelectedCallback(label, operation) {
+        let checked = this.state.messages.filter(message => message.selected === true);
+        let msgIds = checked.map(message => message.id);
+        console.log("label update:"+msgIds+"label:"+label);
+        await fetch(`/api/messages`, {
+            method: 'PATCH',
+            body: JSON.stringify({
+                messageIds: msgIds,
+                command: operation,
+                label: label
+            }),
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+            }
+        });
+
+        //Reload messages after update
+        this.reloadMessages();
+
+    }
+
+    async componentDidMount() {
+        const messageResponse = await fetch(`/api/messages`);
+        const messages = await messageResponse.json();
+
+        messages._embedded.messages.map(message => {
+            message = messages._embedded.messages.find(item => message.id === item.id)
+        });
+        console.log(messages._embedded.messages);
+        this.setState({
+            messages: messages._embedded.messages
+        })
+    }
+
+    async reloadMessages() {
+        const messageResponse = await fetch(`/api/messages`);
+        const messages = await messageResponse.json();
+
+        this.setState((prevState) => ({
+                messages: messages._embedded.messages.map(message => ({
+                    ...message, selected: prevState.messages.find(
+                        item => message.id === item.id).selected
+                }))
+            }
+        ))
+    }
 
     render() {
         console.log(this.state.messages);
