@@ -1,6 +1,6 @@
 import React from 'react'
 
-const Toolbar = ({markReadCallback, selectAllCallback, deleteSelectedCallback, labelSelectedCallback, messages}) => {
+const Toolbar = ({toggleCompose, markReadCallback, selectAllCallback, deleteSelectedCallback, labelSelectedCallback, messages}) => {
 
     const countUnread = () => {
         let count = messages.filter(message => message.read === false || message.read === undefined).length;
@@ -40,6 +40,9 @@ const Toolbar = ({markReadCallback, selectAllCallback, deleteSelectedCallback, l
         <div class="row toolbar">
             <div class="col-md-12">
                 {countUnread()}
+                <a class="btn btn-danger" onClick={toggleCompose}>
+                    <i class="fa fa-plus"></i>
+                </a>
                 <button class="btn btn-default" onClick={() => selectAllCallback()}>
                     <i class={selectButtonStyle()}></i>
                 </button>

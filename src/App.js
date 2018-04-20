@@ -2,11 +2,12 @@ import React, {Component} from 'react';
 import './App.css';
 import Messages from "./components/Messages";
 import Toolbar from "./components/Toolbar";
+import Compose from "./components/Compose";
 
 class App extends Component {
     constructor(props) {
         super(props);
-        this.state = {messages: []}
+        this.state = {messages: [], compose: false}
     }
 
     async toggleStar(message) {
@@ -32,6 +33,12 @@ class App extends Component {
     toggleCheck(message) {
         let newMessage = {...message, selected: message.selected = !message.selected};
         this.setMessageState(message, newMessage)
+    };
+
+    toggleCompose() {
+        this.setState((prevState) => {
+            return ({...prevState, compose: !prevState.compose})
+        });
     };
 
     selectAllCallback() {
@@ -122,7 +129,7 @@ class App extends Component {
     async labelSelectedCallback(label, operation) {
         let checked = this.state.messages.filter(message => message.selected === true);
         let msgIds = checked.map(message => message.id);
-        console.log("label update:"+msgIds+"label:"+label);
+        console.log("label update:" + msgIds + "label:" + label);
         await fetch(`/api/messages`, {
             method: 'PATCH',
             body: JSON.stringify({
@@ -138,7 +145,24 @@ class App extends Component {
 
         //Reload messages after update
         this.reloadMessages();
+    }
 
+    async sendMessage(subject, body) {
+
+        await fetch(`/api/messages`, {
+            method: 'POST',
+            body: JSON.stringify({
+                subject: subject,
+                command: body
+            }),
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+            }
+        });
+
+        //Reload messages after update
+        this.reloadMessages();
     }
 
     async componentDidMount() {
@@ -158,13 +182,22 @@ class App extends Component {
         const messageResponse = await fetch(`/api/messages`);
         const messages = await messageResponse.json();
 
-        this.setState((prevState) => ({
-                messages: messages._embedded.messages.map(message => ({
-                    ...message, selected: prevState.messages.find(
-                        item => message.id === item.id).selected
-                }))
-            }
-        ))
+        this.setState((prevState) => {
+            return ({
+                    messages: messages._embedded.messages.map((message) => {
+                            let prevMsg = prevState.messages.find(item => message.id === item.id);
+                            let selected = prevMsg === undefined ? false : prevMsg.selected;
+                            return (
+                                {
+                                    ...message, selected: selected
+                                }
+
+                            );
+                        }
+                    )
+                }
+            )
+        })
     }
 
     render() {
@@ -175,7 +208,9 @@ class App extends Component {
                          selectAllCallback={this.selectAllCallback.bind(this)}
                          deleteSelectedCallback={this.deleteSelectedCallback.bind(this)}
                          labelSelectedCallback={this.labelSelectedCallback.bind(this)}
+                         toggleCompose={this.toggleCompose.bind(this)}
                          messages={this.state.messages}/>
+                {this.state.compose === true ? <Compose sendMessage={this.sendMessage.bind(this)}/> : ""}
                 <Messages checkCallback={this.toggleCheck.bind(this)}
                           starredCallback={this.toggleStar.bind(this)}
                           messages={this.state.messages}/>
