@@ -3,6 +3,7 @@ import './App.css';
 import Messages from "./components/Messages";
 import Toolbar from "./components/Toolbar";
 import Compose from "./components/Compose";
+import {connect} from "react-redux";
 
 class App extends Component {
     constructor(props) {
@@ -10,25 +11,25 @@ class App extends Component {
         this.state = {messages: [], compose: false}
     }
 
-    async toggleStar(message) {
-        console.log("About to try to patch");
-        await fetch(`/api/messages`, {
-            method: 'PATCH',
-            body: JSON.stringify({
-                messageIds: [message.id],
-                command: "star",
-                star: !message.starred
-            }),
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json',
-            }
-        });
-
-        //Reload messages after update
-        this.reloadMessages();
-
-    };
+    // async toggleStar(message) {
+    //     console.log("About to try to patch");
+    //     await fetch(`/api/messages`, {
+    //         method: 'PATCH',
+    //         body: JSON.stringify({
+    //             messageIds: [message.id],
+    //             command: "star",
+    //             star: !message.starred
+    //         }),
+    //         headers: {
+    //             'Content-Type': 'application/json',
+    //             'Accept': 'application/json',
+    //         }
+    //     });
+    //
+    //     //Reload messages after update
+    //     this.reloadMessages();
+    //
+    // };
 
     toggleCheck(message) {
         let newMessage = {...message, selected: message.selected = !message.selected};
@@ -42,12 +43,12 @@ class App extends Component {
     };
 
     selectAllCallback() {
-        let unchecked = this.state.messages.filter(message => message.selected === undefined ||
+        let unchecked = this.props.messages.filter(message => message.selected === undefined ||
             message.selected === false);
 
         if (unchecked.length === 0) {
             //Deselect all and save
-            this.state.messages.forEach((message) => this.toggleCheck(message))
+            this.props.messages.forEach((message) => this.toggleCheck(message))
         } else {
             //Select unchecked list and save
             unchecked.forEach((message) => {
@@ -57,7 +58,7 @@ class App extends Component {
     }
 
     async markReadCallback(read) {
-        let checked = this.state.messages.filter(message => message.selected === true);
+        let checked = this.props.messages.filter(message => message.selected === true);
         let msgIds = checked.map(message => message.id);
         console.log("About to try to patch");
         await fetch(`/api/messages`, {
@@ -84,7 +85,7 @@ class App extends Component {
     }
 
     findIndexByMessage(message) {
-        let messages = this.state.messages;
+        let messages = this.props.messages;
         return messages.indexOf(messages.find(m => m.id === message.id));
     }
 
@@ -107,7 +108,7 @@ class App extends Component {
 
     async deleteSelectedCallback() {
         console.log("Delete btn pressed:")
-        let checked = this.state.messages.filter(message => message.selected === true);
+        let checked = this.props.messages.filter(message => message.selected === true);
         let msgIds = checked.map(message => message.id);
 
         await fetch(`/api/messages`, {
@@ -127,7 +128,7 @@ class App extends Component {
     }
 
     async labelSelectedCallback(label, operation) {
-        let checked = this.state.messages.filter(message => message.selected === true);
+        let checked = this.props.messages.filter(message => message.selected === true);
         let msgIds = checked.map(message => message.id);
         console.log("label update:" + msgIds + "label:" + label);
         await fetch(`/api/messages`, {
@@ -165,18 +166,18 @@ class App extends Component {
         this.reloadMessages();
     }
 
-    async componentDidMount() {
-        const messageResponse = await fetch(`/api/messages`);
-        const messages = await messageResponse.json();
-
-        messages._embedded.messages.map(message => {
-            message = messages._embedded.messages.find(item => message.id === item.id)
-        });
-        console.log(messages._embedded.messages);
-        this.setState({
-            messages: messages._embedded.messages
-        })
-    }
+    // async componentDidMount() {
+    //     const messageResponse = await fetch(`/api/messages`);
+    //     const messages = await messageResponse.json();
+    //
+    //     messages._embedded.messages.map(message => {
+    //         message = messages._embedded.messages.find(item => message.id === item.id)
+    //     });
+    //     console.log(messages._embedded.messages);
+    //     this.setState({
+    //         messages: messages._embedded.messages
+    //     })
+    // }
 
     async reloadMessages() {
         const messageResponse = await fetch(`/api/messages`);
@@ -199,7 +200,8 @@ class App extends Component {
     }
 
     render() {
-        console.log(this.state.messages);
+        console.log(this.props);
+        console.log(this.props.messages);
         return (
             <div className="App">
                 <Toolbar markReadCallback={this.markReadCallback.bind(this)}
@@ -207,14 +209,22 @@ class App extends Component {
                          deleteSelectedCallback={this.deleteSelectedCallback.bind(this)}
                          labelSelectedCallback={this.labelSelectedCallback.bind(this)}
                          toggleCompose={this.toggleCompose.bind(this)}
-                         messages={this.state.messages}/>
-                {this.state.compose === true ? <Compose sendMessage={this.sendMessage.bind(this)}/> : ""}
+                         messages={this.props.messages}/>
+                {this.props.compose === true ? <Compose sendMessage={this.sendMessage.bind(this)}/> : ""}
                 <Messages checkCallback={this.toggleCheck.bind(this)}
-                          starredCallback={this.toggleStar.bind(this)}
-                          messages={this.state.messages}/>
+                          // starredCallback={this.toggleStar.bind(this)}
+                          messages={this.props.messages}/>
             </div>
         );
     }
 }
 
-export default App;
+const mapStateToProps = state => ({...state})
+
+const mapDispatchToProps = () => ({})
+
+export default connect(
+    mapStateToProps,
+    mapDispatchToProps
+)(App)
+

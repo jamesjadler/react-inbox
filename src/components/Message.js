@@ -1,4 +1,8 @@
 import React from 'react'
+import {connect} from "react-redux";
+import {bindActionCreators} from "redux";
+import {toggleStar} from "../actions";
+import App from "../App";
 
 
 const Message = ({checkCallback, readCallback, starredCallback, message}) => {
@@ -19,7 +23,8 @@ const Message = ({checkCallback, readCallback, starredCallback, message}) => {
     const starStyle = () => {
         return message.starred === true ? "star fa fa-star" : "star fa fa-star-o";
     };
-
+    console.log("Message message:")
+    console.log(message);
     return (
         <div class={selectedStyle()}>
             <div class="col-xs-1">
@@ -29,7 +34,7 @@ const Message = ({checkCallback, readCallback, starredCallback, message}) => {
                                onClick={() => checkCallback(message)}/>
                     </div>
                     <div class="col-xs-2">
-                        <i class={starStyle()} onClick={() => starredCallback(message)}></i>
+                        <i class={starStyle()} onClick={() => starredCallback(message)}/>
                     </div>
                 </div>
             </div>
@@ -44,4 +49,11 @@ const Message = ({checkCallback, readCallback, starredCallback, message}) => {
     )
 };
 
-export default Message
+const mapDispatchToProps = dispatch => bindActionCreators({
+    starredCallback: toggleStar,
+}, dispatch)
+
+export default connect(
+    null,
+    mapDispatchToProps
+)(Message)
