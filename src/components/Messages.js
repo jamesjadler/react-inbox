@@ -1,13 +1,23 @@
-import React from 'react'
+import React, {Component} from 'react'
 import Message from "./Message";
+import {connect} from "react-redux";
 
-const Messages = ({checkCallback, readCallback, starredCallback, messages}) => {
-    return (
-        <div className="collection">
-            {messages.map(message => <Message checkCallback={checkCallback} starredCallback={starredCallback}
-                                              message={message}/>)}
-        </div>
-    )
-};
+class Messages extends Component {
+    render() {
+        return (
+            <div className="collection">
+                {this.props.messages.map(message => <Message key={message.id} message={message}/>)}
+            </div>
+        )
+    };
+}
 
-export default Messages
+const mapStateToProps = state => ({...state})
+
+const mapDispatchToProps = () => ({})
+
+export default connect(
+    mapStateToProps,
+    mapDispatchToProps
+)(Messages)
+

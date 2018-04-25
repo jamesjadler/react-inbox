@@ -1,4 +1,7 @@
 import React from 'react'
+import {sendMessage} from "../actions";
+import {bindActionCreators} from "redux";
+import {connect} from "react-redux";
 
 
 const Compose = ({sendMessage}) => {
@@ -7,7 +10,7 @@ const Compose = ({sendMessage}) => {
         let subject = e.target.subject.value;
         let body = e.target.body.value;
 
-        sendMessage(subject,body);
+        sendMessage(subject, body);
     };
 
 
@@ -32,11 +35,20 @@ const Compose = ({sendMessage}) => {
             </div>
             <div class="form-group">
                 <div class="col-sm-8 col-sm-offset-2">
-                    <input type="submit" value="Send" class="btn btn-primary" />
+                    <input type="submit" value="Send" class="btn btn-primary"/>
                 </div>
             </div>
         </form>
     )
 };
 
-export default Compose
+const mapDispatchToProps = dispatch => bindActionCreators({
+    sendMessage
+}, dispatch);
+
+export default connect(
+    null,
+    mapDispatchToProps
+)(Compose)
+
+

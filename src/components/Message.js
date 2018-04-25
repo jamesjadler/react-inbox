@@ -1,19 +1,12 @@
 import React from 'react'
 import {connect} from "react-redux";
 import {bindActionCreators} from "redux";
-import {toggleStar} from "../actions";
-import App from "../App";
+import {starredCallback, checkCallback} from "../actions";
 
 
-const Message = ({checkCallback, readCallback, starredCallback, message}) => {
-    //Read should have "read" style
-    //Unread should have "unread" style
-    //Selected message should have "selected" style and checkbox checked
-    //Labels should be displayed
-    //Starred message should be marked
+const Message = ({checkCallback, starredCallback, message}) => {
 
     const selectedStyle = () => {
-        console.log(message.selected);
         var msg = "row message";
         msg = message.read === true ? msg + " read" : msg + " unread";
         msg = message.selected === true ? msg + " selected" : msg;
@@ -23,8 +16,6 @@ const Message = ({checkCallback, readCallback, starredCallback, message}) => {
     const starStyle = () => {
         return message.starred === true ? "star fa fa-star" : "star fa fa-star-o";
     };
-    console.log("Message message:")
-    console.log(message);
     return (
         <div class={selectedStyle()}>
             <div class="col-xs-1">
@@ -50,8 +41,9 @@ const Message = ({checkCallback, readCallback, starredCallback, message}) => {
 };
 
 const mapDispatchToProps = dispatch => bindActionCreators({
-    starredCallback: toggleStar,
-}, dispatch)
+    starredCallback,
+    checkCallback
+}, dispatch);
 
 export default connect(
     null,
