@@ -13,7 +13,7 @@ class App extends Component {
     render() {
         return (
             <div className="App">
-                <Toolbar messages={this.props.messages}/>
+                <Toolbar />
                 {this.props.compose === true ? <Compose/> : ""}
                 <Messages/>
             </div>
